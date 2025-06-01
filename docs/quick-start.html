@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGOS Studio快速入门指南 | LGOS Studio文档系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00cc99;
+            --primary-dark: #004d99;
+            --secondary: #ed7d31;
+            --accent: #00cc99;
+            --dark: #222831;
+            --darker: #1d2228;
+            --light: #f5f7fa;
+            --gray: #8e9aaf;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(67, 97, 238, 0.2) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* 头部样式 */
+        .header {
+            padding: 1.5rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(30, 33, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            bottom: 0;
+            left: 0;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 搜索样式 */
+        .search-container {
+            position: relative;
+            width: 300px;
+            margin: 2rem auto;
+            margin-bottom: 3rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            color: var(--light);
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* 侧边导航 */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: rgba(30, 33, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.8rem;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: var(--light);
+            display: block;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .sidebar a:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--secondary);
+        }
+
+        .sidebar i {
+            font-size: 0.9rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar .active {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        /* 文档内容样式 */
+        .document-content {
+            flex-grow: 1;
+            background: rgba(30, 33, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            max-width: 900px;
+        }
+
+        .document-header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .document-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+
+        .doc-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .doc-meta div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .doc-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--secondary);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        .doc-content {
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .doc-content h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1.2rem;
+            color: var(--secondary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .doc-content h3 {
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        .doc-content h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.8rem;
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        .doc-content p {
+            margin: 1.2rem 0;
+            color: var(--light);
+            opacity: 0.9;
+        }
+
+        .doc-content ul, .doc-content ol {
+            margin: 1.2rem 0;
+            padding-left: 1.8rem;
+        }
+
+        .doc-content li {
+            margin-bottom: 0.8rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: #f8f8f2;
+            display: block;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .code-lang {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .tip-box {
+            background: rgba(56, 182, 255, 0.1);
+            border-left: 3px solid var(--secondary);
+            padding: 1.2rem;
+            border-radius: 4px;
+            margin: 1.8rem 0;
+        }
+
+        .tip-box h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .next-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.2rem;
+            margin: 2.5rem 0;
+        }
+
+        .next-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .next-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .next-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .search-container {
+                width: 100%;
+                max-width: 500px;
+            }
+            
+            .document-content {
+                padding: 1.8rem;
+            }
+            
+            .document-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .doc-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header {
+                padding: 1rem 5%;
+            }
+            
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-infinity logo-icon"></i>
+            <h1>LGOS Studio Docs</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> 首页</a>
+            <a href="/Docs"><i class="fas fa-book"></i> 文档</a>
+            <a href="#"><i class="fas fa-blog"></i> 博客</a>
+            <a href="#"><i class="fas fa-users"></i> 社区</a>
+            <a href="#"><i class="fas fa-info-circle"></i> 关于</a>
+        </nav>
+    </header>
+
+    <!-- 搜索框 -->
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-box" placeholder="搜索文档...">
+    </div>
+
+    <div class="container">
+        <!-- 侧边导航 -->
+        <aside class="sidebar">
+            <h3><i class="fas fa-file-alt"></i> 文档目录</h3>
+            <ul>
+                <li><a href="#overview" class="active"><i class="fas fa-bookmark"></i> 概述</a></li>
+                <li><a href="#requirements"><i class="fas fa-server"></i> 系统要求</a></li>
+                <li><a href="#installation"><i class="fas fa-download"></i> 安装 LGOS Studio</a></li>
+                <li><a href="#first-component"><i class="fas fa-code"></i> 创建第一个组件</a></li>
+                <li><a href="#routing"><i class="fas fa-route"></i> 路由配置</a></li>
+                <li><a href="#state"><i class="fas fa-database"></i> 状态管理</a></li>
+                <li><a href="#api"><i class="fas fa-cloud"></i> API 请求</a></li>
+                <li><a href="#optimization"><i class="fas fa-tachometer-alt"></i> 性能优化</a></li>
+                <li><a href="#best-practices"><i class="fas fa-star"></i> 最佳实践</a></li>
+                <li><a href="#next-steps"><i class="fas fa-arrow-right"></i> 下一步</a></li>
+            </ul>
+        </aside>
+
+        <!-- 文档内容区域 -->
+        <main class="document-content">
+            <div class="document-header">
+                <span class="doc-category">快速入门</span>
+                <h1>LGOS Studio 快速入门指南</h1>
+                <p>了解如何在几分钟内启动并运行您的第一个 LGOS Studio 应用程序</p>
+                <div class="doc-meta">
+                    <div><i class="fas fa-pen"></i> LGOS Studio 核心团队</div>
+                    <div><i class="fas fa-sync-alt"></i> 更新于: 2023年10月15日</div>
+                    <div><i class="fas fa-tag"></i> 版本: v3.2.0</div>
+                    <div><i class="fas fa-clock"></i> 阅读时间: 15分钟</div>
+                </div>
+            </div>
+            
+            <div class="doc-content">
+                <section id="overview">
+                    <h2>概述</h2>
+                    <p>欢迎使用 LGOS Studio 框架！本指南将帮助您快速开始使用 LGOS Studio 构建现代化、高性能的应用程序。LGOS Studio 是一个轻量级、模块化的前端框架，专注于提供无边界的设计体验和卓越的性能。</p>
+                </section>
+                
+                <section id="requirements">
+                    <h2>系统要求</h2>
+                    <p>在开始之前，请确保您的开发环境满足以下要求：</p>
+                    <ul>
+                        <li>Node.js v16.0 或更高版本</li>
+                        <li>npm v8.0 或更高版本</li>
+                        <li>现代浏览器（Chrome 88+, Firefox 85+, Safari 14+）</li>
+                    </ul>
+                </section>
+                
+                <section id="installation">
+                    <h2>安装 LGOS Studio</h2>
+                    
+                    <h3>使用 CLI 创建新项目</h3>
+                    <p>最简单的方式是使用 LGOS Studio CLI 创建新项目：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">bash</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>npx create-LGOS Studio-app my-app
+cd my-app
+npm install
+npm run dev</code>
+                    </div>
+                    
+                    <h3>手动安装</h3>
+                    <p>如果您希望手动集成 LGOS Studio 到现有项目中：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">bash</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>npm install @LGOS Studio/core @LGOS Studio/react</code>
+                    </div>
+                </section>
+                
+                <section id="first-component">
+                    <h2>创建您的第一个组件</h2>
+                    
+                    <h3>函数式组件</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>// src/components/Welcome.jsx
+import { useState } from '@LGOS Studio/react';
+
+export default function Welcome() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    &lt;div className="welcome-container"&gt;
+      &lt;h1&gt;欢迎使用 LGOS Studio!&lt;/h1&gt;
+      &lt;p&gt;您已点击按钮 {count} 次&lt;/p&gt;
+      &lt;button 
+        className="primary-btn"
+        onClick={() => setCount(count + 1)}
+      &gt;
+        点击我
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code>
+                    </div>
+                    
+                    <h3>样式模块</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">css</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>/* src/components/Welcome.module.css */
+.welcome-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.primary-btn {
+  background: linear-gradient(45deg, #4361ee, #38b6ff);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}</code>
+                    </div>
+                </section>
+                
+                <section id="routing">
+                    <h2>路由配置</h2>
+                    <p>LGOS Studio 提供了简单的路由解决方案：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>// src/App.jsx
+import { Router, Route } from '@LGOS Studio/react-router';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+
+export default function App() {
+  return (
+    &lt;Router&gt;
+      &lt;Route path="/" component={Home} exact /&gt;
+      &lt;Route path="/about" component={About} /&gt;
+      &lt;Route path="/contact" component={Contact} /&gt;
+    &lt;/Router&gt;
+  );
+}</code>
+                    </div>
+                </section>
+                
+                <section id="state">
+                    <h2>状态管理</h2>
+                    <p>LGOS Studio 提供了轻量级的状态管理解决方案：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>// src/store/userStore.js
+import { createStore } from '@LGOS Studio/core';
+
+const userStore = createStore({
+  state: {
+    name: '访客',
+    isLoggedIn: false
+  },
+  actions: {
+    login(state, name) {
+      state.name = name;
+      state.isLoggedIn = true;
+    },
+    logout(state) {
+      state.name = '访客';
+      state.isLoggedIn = false;
+    }
+  }
+});
+
+export default userStore;</code>
+                    </div>
+                    <p>在组件中使用：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>import { useStore } from '@LGOS Studio/react';
+import userStore from './store/userStore';
+
+function UserProfile() {
+  const [user, actions] = useStore(userStore);
+  
+  return (
+    &lt;div&gt;
+      {user.isLoggedIn ? (
+        &lt;div&gt;
+          &lt;p&gt;欢迎, {user.name}!&lt;/p&gt;
+          &lt;button onClick={actions.logout}&gt;登出&lt;/button&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;button onClick={() => actions.login('新用户')}&gt;登录&lt;/button&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code>
+                    </div>
+                </section>
+                
+                <section id="api">
+                    <h2>API 请求</h2>
+                    <p>使用 LGOS Studio 的 HTTP 模块进行 API 调用：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>import { useEffect, useState } from '@LGOS Studio/react';
+import { http } from '@LGOS Studio/core';
+
+function DataFetcher() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await http.get('/api/data');
+        setData(response.data);
+      } catch (error) {
+        console.error('获取数据失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
+  
+  if (loading) return &lt;p&gt;加载中...&lt;/p&gt;;
+  
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;获取的数据&lt;/h2&gt;
+      &lt;pre&gt;{JSON.stringify(data, null, 2)}&lt;/pre&gt;
+    &lt;/div&gt;
+  );
+}</code>
+                    </div>
+                </section>
+                
+                <section id="optimization">
+                    <h2>性能优化技巧</h2>
+                    
+                    <h3>组件懒加载</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>import { lazy, Suspense } from '@LGOS Studio/react';
+
+const HeavyComponent = lazy(() => import('./HeavyComponent'));
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;div&gt;加载中...&lt;/div&gt;}&gt;
+      &lt;HeavyComponent /&gt;
+    &lt;/Suspense&gt;
+  );
+}</code>
+                    </div>
+                    
+                    <h3>记忆化计算</h3>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">javascript</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>import { useMemo } from '@LGOS Studio/react';
+
+function ExpensiveComponent({ items }) {
+  const sortedItems = useMemo(() => {
+    return items.sort((a, b) => a.value - b.value);
+  }, [items]);
+  
+  return (
+    &lt;ul&gt;
+      {sortedItems.map(item => (
+        &lt;li key={item.id}&gt;{item.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}</code>
+                    </div>
+                </section>
+                
+                <section id="best-practices">
+                    <h2>最佳实践</h2>
+                    
+                    <div class="tip-box">
+                        <h4><i class="fas fa-lightbulb"></i> 组件设计</h4>
+                        <ul>
+                            <li>保持组件小而专注</li>
+                            <li>使用组合而非继承</li>
+                            <li>遵循单一职责原则</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h4><i class="fas fa-database"></i> 状态管理</h4>
+                        <ul>
+                            <li>仅在必要时使用全局状态</li>
+                            <li>优先使用本地组件状态</li>
+                            <li>使用选择器优化状态访问</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h4><i class="fas fa-tachometer-alt"></i> 性能优化</h4>
+                        <ul>
+                            <li>使用 <code>useMemo</code> 和 <code>useCallback</code> 避免不必要的重新计算</li>
+                            <li>使用虚拟列表处理大型数据集</li>
+                            <li>使用代码分割减少初始加载时间</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tip-box">
+                        <h4><i class="fas fa-palette"></i> 样式管理</h4>
+                        <ul>
+                            <li>使用 CSS 模块避免样式冲突</li>
+                            <li>采用设计系统保持一致性</li>
+                            <li>使用 CSS 变量实现主题切换</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <section id="next-steps">
+                    <h2>下一步</h2>
+                    <p>现在您已经掌握了 LGOS Studio 的基础知识，接下来可以：</p>
+                    
+                    <div class="next-steps">
+                        <div class="next-card">
+                            <h3><i class="fas fa-book"></i> 核心概念</h3>
+                            <p>深入理解 LGOS Studio 框架的设计思想和核心机制</p>
+                        </div>
+                        
+                        <div class="next-card">
+                            <h3><i class="fas fa-plug"></i> API 参考</h3>
+                            <p>查看完整的 LGOS Studio API 文档和使用示例</p>
+                        </div>
+                        
+                        <div class="next-card">
+                            <h3><i class="fas fa-tools"></i> 开发者工具</h3>
+                            <p>了解如何充分利用 LGOS Studio CLI 和开发者工具</p>
+                        </div>
+                        
+                        <div class="next-card">
+                            <h3><i class="fas fa-users"></i> 社区案例</h3>
+                            <p>查看由社区构建的真实项目案例</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 复制按钮功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.closest('.code-block');
+                    const code = codeBlock.querySelector('code');
+                    
+                    // 创建临时 textarea 用于复制
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    try {
+                        const successful = document.execCommand('copy');
+                        const msg = successful ? '已复制到剪贴板!' : '复制失败';
+                        
+                        // 显示复制成功反馈
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('无法复制文本: ', err);
+                    }
+                    
+                    // 清理
+                    document.body.removeChild(textarea);
+                });
+            });
+            
+            // 平滑滚动
+            const links = document.querySelectorAll('.sidebar a');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if(this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        
+                        // 移除之前的活动状态
+                        links.forEach(link => link.classList.remove('active'));
+                        
+                        // 添加当前活动状态
+                        this.classList.add('active');
+                        
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        
+                        if(targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 100,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
