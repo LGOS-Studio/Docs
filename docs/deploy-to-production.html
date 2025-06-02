@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部署到生产环境 | LGOS Studio Docs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/favicon.ico">
+    <style>
+        :root {
+            --primary: #00cc99;
+            --primary-dark: #004d99;
+            --secondary: #ed7d31;
+            --accent: #00cc99;
+            --dark: #222831;
+            --darker: #1d2228;
+            --light: #f5f7fa;
+            --gray: #8e9aaf;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(67, 97, 238, 0.2) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* 头部样式 */
+        .header {
+            padding: 1.5rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(30, 33, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            bottom: 0;
+            left: 0;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 10%;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .deployment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .deployment-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .deployment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .deployment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .deployment-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .deployment-card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .deployment-card li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .deployment-card li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .phase-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .phase-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .phase-card {
+            background: rgba(30, 33, 45, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .phase-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .phase-card ul {
+            list-style: none;
+        }
+
+        .phase-card li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .phase-card li:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+        }
+
+        .deployment-workflow {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .deployment-workflow h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            position: relative;
+        }
+
+        .step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            right: -75px;
+            width: 60px;
+            height: 2px;
+            background: var(--secondary);
+        }
+
+        .step-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            border: 2px solid var(--secondary);
+        }
+
+        .step-label {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: #f8f8f2;
+            display: block;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .code-lang {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .best-practices {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .best-practices h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .practice-card {
+            background: rgba(30, 33, 45, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .practice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .practice-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .practice-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .workflow-steps {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .step:not(:last-child):after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .deployment-grid,
+            .phase-grid,
+            .practice-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-steps {
+                gap: 1rem;
+            }
+            
+            .step {
+                width: 100px;
+            }
+            
+            .step-circle {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem 5%;
+            }
+            
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .page-header {
+                padding: 0 5%;
+            }
+            
+            .step {
+                width: 80px;
+            }
+            
+            .step-circle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <a href="/Docs"><div class="logo">
+            <i class="fas fa-infinity logo-icon"></i>
+            <h1>LGOS Studio Docs</h1>
+        </div></a>
+        <nav class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> 首页</a>
+            <a href="/Docs"><i class="fas fa-book"></i> 文档</a>
+            <a href="/Blog"><i class="fas fa-blog"></i> 博客</a>
+            <a href="/Community"><i class="fas fa-users"></i> 社区</a>
+            <a href="/About"><i class="fas fa-info-circle"></i> 关于</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>部署到生产环境</h1>
+            <p>从开发到生产的完整部署指南，确保您的应用在生产环境中稳定、安全且高性能运行</p>
+        </div>
+
+        <div class="deployment-grid">
+            <div class="deployment-card">
+                <div class="card-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h2>部署前准备</h2>
+                <ul>
+                    <li>完成所有测试（单元测试、集成测试、压力测试）</li>
+                    <li>创建生产环境配置（数据库、API密钥等）</li>
+                    <li>准备部署清单和回滚计划</li>
+                    <li>设置监控和告警系统</li>
+                    <li>确保所有依赖项已锁定版本</li>
+                </ul>
+            </div>
+            
+            <div class="deployment-card">
+                <div class="card-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <h2>环境配置</h2>
+                <ul>
+                    <li>使用基础设施即代码（IaC）管理环境</li>
+                    <li>配置负载均衡和自动扩展</li>
+                    <li>设置生产数据库（主从复制、分片）</li>
+                    <li>配置CDN和缓存策略</li>
+                    <li>设置防火墙和安全组规则</li>
+                </ul>
+            </div>
+            
+            <div class="deployment-card">
+                <div class="card-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h2>部署策略</h2>
+                <ul>
+                    <li>蓝绿部署（零停机更新）</li>
+                    <li>金丝雀发布（渐进式流量切换）</li>
+                    <li>滚动更新（逐步替换实例）</li>
+                    <li>功能开关（逐步启用新功能）</li>
+                    <li>暗启动（在生产环境测试新功能）</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <h2><i class="fas fa-sitemap"></i> 部署流程阶段</h2>
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3><i class="fas fa-code-branch"></i> 1. 代码构建</h3>
+                    <ul>
+                        <li>从版本控制拉取代码</li>
+                        <li>安装依赖项</li>
+                        <li>运行测试套件</li>
+                        <li>构建可执行文件/容器镜像</li>
+                        <li>生成构建报告</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-vial"></i> 2. 预发布测试</h3>
+                    <ul>
+                        <li>部署到预生产环境</li>
+                        <li>执行端到端测试</li>
+                        <li>安全扫描和漏洞检测</li>
+                        <li>性能基准测试</li>
+                        <li>用户验收测试（UAT）</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-cloud-upload-alt"></i> 3. 生产部署</h3>
+                    <ul>
+                        <li>选择部署策略（蓝绿/金丝雀）</li>
+                        <li>部署到生产环境</li>
+                        <li>逐步切换流量</li>
+                        <li>实时监控关键指标</li>
+                        <li>验证服务健康状态</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-search"></i> 4. 部署后验证</h3>
+                    <ul>
+                        <li>自动化冒烟测试</li>
+                        <li>监控系统指标（CPU、内存、延迟）</li>
+                        <li>错误率监控</li>
+                        <li>日志分析</li>
+                        <li>用户行为分析</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="deployment-workflow">
+            <h2><i class="fas fa-project-diagram"></i> 部署工作流</h2>
+            <div class="workflow-steps">
+                <div class="step">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">代码提交</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">CI构建</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">测试环境</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">预生产</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">生产部署</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">监控</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-practices">
+            <h2><i class="fas fa-star"></i> 部署最佳实践</h2>
+            <div class="practice-grid">
+                <div class="practice-card">
+                    <h3><i class="fas fa-code"></i> CI/CD 流水线示例</h3>
+                    <p>使用GitHub Actions的部署流水线配置：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">yaml</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>name: Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      
+  deploy-to-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to Staging
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'my-app-staging'
+          slot-name: 'staging'
+          package: .
+          
+  deploy-to-production:
+    needs: deploy-to-staging
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve Production Deployment
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.PRODUCTION_APPROVAL_TOKEN }}
+          
+      - name: Deploy to Production
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'my-app-production'
+          slot-name: 'production'
+          package: .</code>
+                    </div>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fas fa-docker"></i> Docker 生产部署</h3>
+                    <p>优化生产环境的Dockerfile示例：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">dockerfile</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code># 第一阶段：构建应用
+FROM node:18-alpine as builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# 第二阶段：生产环境
+FROM node:18-alpine
+WORKDIR /app
+
+# 安装生产依赖
+COPY package*.json ./
+RUN npm ci --only=production
+
+# 从构建阶段复制构建结果
+COPY --from=builder /app/dist ./dist
+
+# 设置非root用户
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=5s \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动应用
+CMD ["node", "dist/main.js"]</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <h2><i class="fas fa-shield-alt"></i> 生产环境安全配置</h2>
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3><i class="fas fa-lock"></i> 网络安全</h3>
+                    <ul>
+                        <li>配置WAF（Web应用防火墙）</li>
+                        <li>启用DDoS防护</li>
+                        <li>使用私有子网隔离资源</li>
+                        <li>限制入站/出站流量</li>
+                        <li>实施安全组和网络ACL</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-key"></i> 访问控制</h3>
+                    <ul>
+                        <li>使用最小权限原则</li>
+                        <li>配置RBAC（基于角色的访问控制）</li>
+                        <li>启用多因素认证（MFA）</li>
+                        <li>定期轮换凭证和密钥</li>
+                        <li>审计所有访问日志</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-database"></i> 数据安全</h3>
+                    <ul>
+                        <li>启用数据库加密（静态和传输中）</li>
+                        <li>配置自动备份和恢复测试</li>
+                        <li>实施数据脱敏</li>
+                        <li>限制敏感数据访问</li>
+                        <li>定期进行安全扫描</li>
+                    </ul>
+                </div>
+                
+                <div class="phase-card">
+                    <h3><i class="fas fa-file-shield"></i> 应用安全</h3>
+                    <ul>
+                        <li>启用CSP（内容安全策略）</li>
+                        <li>配置HSTS（HTTP严格传输安全）</li>
+                        <li>实施CSRF和XSS防护</li>
+                        <li>禁用不必要的HTTP方法</li>
+                        <li>使用安全标头（X-Content-Type-Options等）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-practices">
+            <h2><i class="fas fa-heartbeat"></i> 监控与告警</h2>
+            <div class="practice-grid">
+                <div class="practice-card">
+                    <h3><i class="fas fa-chart-line"></i> 关键监控指标</h3>
+                    <ul>
+                        <li><strong>应用性能</strong>：响应时间、错误率、吞吐量</li>
+                        <li><strong>资源使用</strong>：CPU、内存、磁盘I/O</li>
+                        <li><strong>数据库</strong>：连接数、查询性能、复制延迟</li>
+                        <li><strong>网络</strong>：延迟、丢包率、带宽使用</li>
+                        <li><strong>业务指标</strong>：交易量、转化率、用户活动</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fas fa-bell"></i> 告警策略</h3>
+                    <ul>
+                        <li>设置多级告警（警告、严重、灾难）</li>
+                        <li>基于SLO（服务级别目标）配置告警</li>
+                        <li>避免告警疲劳（合理设置阈值）</li>
+                        <li>实施告警升级策略</li>
+                        <li>定期审查和优化告警规则</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fas fa-history"></i> 灾难恢复</h3>
+                    <ul>
+                        <li>定期备份和恢复测试</li>
+                        <li>多区域/多可用区部署</li>
+                        <li>定义RTO（恢复时间目标）和RPO（恢复点目标）</li>
+                        <li>自动化故障转移</li>
+                        <li>定期进行灾难恢复演练</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <p><i class="fas fa-sync-alt"></i> 最后更新: 2023年10月28日 | 版本: 3.0.0 | 部署指南</p>
+            <p>© 2023 LGOS Studio Docs | 生产部署最佳实践</p>
+        </div>
+    </div>
+
+    <script>
+        // 复制按钮功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.closest('.code-block');
+                    const code = codeBlock.querySelector('code');
+                    
+                    // 创建临时 textarea 用于复制
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    try {
+                        const successful = document.execCommand('copy');
+                        const msg = successful ? '已复制到剪贴板!' : '复制失败';
+                        
+                        // 显示复制成功反馈
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('无法复制文本: ', err);
+                    }
+                    
+                    // 清理
+                    document.body.removeChild(textarea);
+                });
+            });
+            
+            // 卡片悬停效果增强
+            const cards = document.querySelectorAll('.deployment-card, .phase-card, .practice-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-7px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
