@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开发者工具套件 | LGOS Studio Docs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="/favicon.ico">
+    <style>
+        :root {
+            --primary: #00cc99;
+            --primary-dark: #004d99;
+            --secondary: #ed7d31;
+            --accent: #00cc99;
+            --dark: #222831;
+            --darker: #1d2228;
+            --light: #f5f7fa;
+            --gray: #8e9aaf;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(67, 97, 238, 0.2) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* 头部样式 */
+        .header {
+            padding: 1.5rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(30, 33, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            bottom: 0;
+            left: 0;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 10%;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--light), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .toolkit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .toolkit-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .toolkit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .toolkit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .toolkit-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        .toolkit-card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .toolkit-card li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+        }
+
+        .toolkit-card li:before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+        }
+
+        .toolkit-card .tool-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tool-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .tool-link:hover {
+            background: rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tool-link.download {
+            background: rgba(74, 222, 128, 0.2);
+            color: var(--success);
+        }
+
+        .tool-link.docs {
+            background: rgba(56, 182, 255, 0.2);
+            color: var(--secondary);
+        }
+
+        .category-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .category-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tool-card {
+            background: rgba(30, 33, 45, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .tool-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tool-tag {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .code-block code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            color: #f8f8f2;
+            display: block;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .code-lang {
+            background: rgba(67, 97, 238, 0.2);
+            color: var(--secondary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .best-practices {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .best-practices h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .practice-card {
+            background: rgba(30, 33, 45, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .practice-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .practice-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .practice-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .toolkit-grid,
+            .tools-grid,
+            .practice-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem 5%;
+            }
+            
+            .logo h1 {
+                font-size: 1.3rem;
+            }
+            
+            .page-header {
+                padding: 0 5%;
+            }
+            
+            .toolkit-card .tool-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <a href="/Docs"><div class="logo">
+            <i class="fas fa-infinity logo-icon"></i>
+            <h1>LGOS Studio Docs</h1>
+        </div></a>
+        <nav class="nav-links">
+            <a href="/"><i class="fas fa-home"></i> 首页</a>
+            <a href="/Docs"><i class="fas fa-book"></i> 文档</a>
+            <a href="/Blog"><i class="fas fa-blog"></i> 博客</a>
+            <a href="/Community"><i class="fas fa-users"></i> 社区</a>
+            <a href="/About"><i class="fas fa-info-circle"></i> 关于</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>开发者工具套件指南</h1>
+            <p>提升开发效率的必备工具集合，从代码编辑器到调试工具，一站式解决开发环境配置问题</p>
+        </div>
+
+        <div class="toolkit-grid">
+            <div class="toolkit-card">
+                <div class="card-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h2>代码编辑器</h2>
+                <ul>
+                    <li>Visual Studio Code - 轻量级多功能编辑器</li>
+                    <li>IntelliJ IDEA - Java/Kotlin开发首选</li>
+                    <li>PyCharm - Python开发专业工具</li>
+                    <li>Sublime Text - 快速轻量的文本编辑器</li>
+                    <li>Vim - 终端环境下的高效编辑器</li>
+                </ul>
+                <div class="tool-links">
+                    <a href="#" class="tool-link download"><i class="fas fa-download"></i> 下载合集</a>
+                    <a href="#" class="tool-link docs"><i class="fas fa-book"></i> 配置指南</a>
+                </div>
+            </div>
+            
+            <div class="toolkit-card">
+                <div class="card-icon">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <h2>调试工具</h2>
+                <ul>
+                    <li>Chrome DevTools - Web调试利器</li>
+                    <li>Postman - API开发与测试</li>
+                    <li>Wireshark - 网络协议分析</li>
+                    <li>Fiddler - HTTP调试代理</li>
+                    <li>Debugger for VS Code - 集成调试环境</li>
+                </ul>
+                <div class="tool-links">
+                    <a href="#" class="tool-link download"><i class="fas fa-download"></i> 下载合集</a>
+                    <a href="#" class="tool-link docs"><i class="fas fa-book"></i> 使用教程</a>
+                </div>
+            </div>
+            
+            <div class="toolkit-card">
+                <div class="card-icon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <h2>命令行工具</h2>
+                <ul>
+                    <li>Windows Terminal - 现代化终端</li>
+                    <li>PowerShell - 强大的脚本环境</li>
+                    <li>Git Bash - Git命令行工具</li>
+                    <li>Oh My Zsh - Zsh配置框架</li>
+                    <li>Cmder - 控制台模拟器</li>
+                </ul>
+                <div class="tool-links">
+                    <a href="#" class="tool-link download"><i class="fas fa-download"></i> 下载合集</a>
+                    <a href="#" class="tool-link docs"><i class="fas fa-book"></i> 命令参考</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2><i class="fas fa-cubes"></i> 开发环境工具</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3><i class="fab fa-docker"></i> Docker</h3>
+                    <p>容器化应用开发与部署平台</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">容器</span>
+                        <span class="tool-tag">DevOps</span>
+                        <span class="tool-tag">部署</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fab fa-node-js"></i> Node.js</h3>
+                    <p>JavaScript运行时环境</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">JavaScript</span>
+                        <span class="tool-tag">后端</span>
+                        <span class="tool-tag">NPM</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fab fa-python"></i> Python</h3>
+                    <p>多用途编程语言环境</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">AI</span>
+                        <span class="tool-tag">数据分析</span>
+                        <span class="tool-tag">脚本</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-database"></i> MySQL</h3>
+                    <p>关系型数据库管理系统</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">数据库</span>
+                        <span class="tool-tag">SQL</span>
+                        <span class="tool-tag">存储</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-server"></i> Redis</h3>
+                    <p>内存数据结构存储系统</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">缓存</span>
+                        <span class="tool-tag">NoSQL</span>
+                        <span class="tool-tag">消息队列</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-cloud"></i> Kubernetes</h3>
+                    <p>容器编排管理系统</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">容器</span>
+                        <span class="tool-tag">集群</span>
+                        <span class="tool-tag">DevOps</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2><i class="fas fa-wrench"></i> 实用开发工具</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3><i class="fab fa-git-alt"></i> Git</h3>
+                    <p>分布式版本控制系统</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">版本控制</span>
+                        <span class="tool-tag">协作</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-network-wired"></i> WSL</h3>
+                    <p>Windows下的Linux子系统</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Linux</span>
+                        <span class="tool-tag">开发环境</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-file-code"></i> JSON Formatter</h3>
+                    <p>JSON数据格式化工具</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">数据</span>
+                        <span class="tool-tag">格式化</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-palette"></i> Figma</h3>
+                    <p>协作式界面设计工具</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">UI设计</span>
+                        <span class="tool-tag">原型</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-terminal"></i> HTTPie</h3>
+                    <p>现代化的命令行HTTP客户端</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">API测试</span>
+                        <span class="tool-tag">命令行</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-compress-arrows-alt"></i> WinMerge</h3>
+                    <p>文件比较与合并工具</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">文件比较</span>
+                        <span class="tool-tag">差异查看</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-practices">
+            <h2><i class="fas fa-cogs"></i> 开发环境配置</h2>
+            <div class="practice-grid">
+                <div class="practice-card">
+                    <h3><i class="fas fa-code"></i> VS Code 配置</h3>
+                    <p>优化VS Code设置的示例配置：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">json</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code>{
+  "editor.fontSize": 14,
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "Default Dark Modern",
+  "terminal.integrated.shell.windows": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+  "emmet.triggerExpansionOnTab": true,
+  "files.autoSave": "afterDelay",
+  "explorer.confirmDelete": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "git.autofetch": true,
+  "git.confirmSync": false
+}</code>
+                    </div>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fab fa-git-alt"></i> Git 别名配置</h3>
+                    <p>提高效率的Git别名设置：</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-lang">bash</span>
+                            <button class="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                        <code># ~/.gitconfig
+
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    df = diff
+    lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    last = log -1 HEAD
+    undo = reset HEAD~1
+    amend = commit --amend
+    unstage = reset HEAD --
+    who = shortlog -s -n --all
+    find = "!f() { git log --all --name-only --pretty=format: | sort -u | grep $1; }; f"</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <h2><i class="fas fa-plug"></i> VS Code 扩展推荐</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3><i class="fas fa-language"></i> ESLint</h3>
+                    <p>JavaScript代码质量工具</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">代码检查</span>
+                        <span class="tool-tag">JavaScript</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-code"></i> Prettier</h3>
+                    <p>代码格式化工具</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">格式化</span>
+                        <span class="tool-tag">多语言</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-brackets-curly"></i> Bracket Pair Colorizer</h3>
+                    <p>括号配对着色器</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">可视化</span>
+                        <span class="tool-tag">辅助</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-file-alt"></i> Path Intellisense</h3>
+                    <p>路径自动补全</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">效率</span>
+                        <span class="tool-tag">自动补全</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-rocket"></i> Live Server</h3>
+                    <p>实时重载开发服务器</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Web开发</span>
+                        <span class="tool-tag">实时预览</span>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <h3><i class="fas fa-terminal"></i> REST Client</h3>
+                    <p>发送HTTP请求并查看响应</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">API测试</span>
+                        <span class="tool-tag">HTTP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="best-practices">
+            <h2><i class="fas fa-lightbulb"></i> 开发效率技巧</h2>
+            <div class="practice-grid">
+                <div class="practice-card">
+                    <h3><i class="fas fa-keyboard"></i> 快捷键精通</h3>
+                    <p>掌握编辑器快捷键可以大幅提升效率。VS Code中：</p>
+                    <ul>
+                        <li>Ctrl+P - 快速文件导航</li>
+                        <li>Ctrl+Shift+P - 命令面板</li>
+                        <li>Ctrl+D - 多选相同词</li>
+                        <li>Alt+Click - 多光标编辑</li>
+                        <li>F12 - 跳转到定义</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fas fa-code-branch"></i> Git工作流</h3>
+                    <p>高效使用Git的实践：</p>
+                    <ul>
+                        <li>使用特性分支开发</li>
+                        <li>小步提交，频繁推送</li>
+                        <li>编写有意义的提交信息</li>
+                        <li>使用.gitignore排除无关文件</li>
+                        <li>定期执行git fetch保持更新</li>
+                    </ul>
+                </div>
+                
+                <div class="practice-card">
+                    <h3><i class="fas fa-terminal"></i> Shell技巧</h3>
+                    <p>命令行生产力技巧：</p>
+                    <ul>
+                        <li>Ctrl+R - 搜索命令历史</li>
+                        <li>Ctrl+A/E - 跳转到行首/行尾</li>
+                        <li>!! - 重复上一条命令</li>
+                        <li>| grep - 过滤命令输出</li>
+                        <li>alias - 创建常用命令别名</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <p><i class="fas fa-sync-alt"></i> 最后更新: 2023年10月30日 | 版本: 2.0.0 | 工具指南</p>
+            <p>© 2023 LGOS Studio Docs | 开发者工具套件</p>
+        </div>
+    </div>
+
+    <script>
+        // 复制按钮功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const codeBlock = this.closest('.code-block');
+                    const code = codeBlock.querySelector('code');
+                    
+                    // 创建临时 textarea 用于复制
+                    const textarea = document.createElement('textarea');
+                    textarea.value = code.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    try {
+                        const successful = document.execCommand('copy');
+                        const msg = successful ? '已复制到剪贴板!' : '复制失败';
+                        
+                        // 显示复制成功反馈
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i> 已复制';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('无法复制文本: ', err);
+                    }
+                    
+                    // 清理
+                    document.body.removeChild(textarea);
+                });
+            });
+            
+            // 卡片悬停效果增强
+            const cards = document.querySelectorAll('.toolkit-card, .tool-card, .practice-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-7px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
